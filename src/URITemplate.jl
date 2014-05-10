@@ -3,7 +3,7 @@ module URITemplate
 	function is_valid_literal(ch)
 		if ch > 0x80
 			return true
-		end 
+		end
 		return ch != '\'' && ch != '\<' && ch != '>' && ch != '<' && ch != '"' &&
 			   ch != '^' && ch != '`' && ch != '{' && ch != '|' && ch != '}' && ch != '%'
 	end
@@ -12,7 +12,7 @@ module URITemplate
 
 	isunreserved(ch) = isalnum(ch) || ch == '-' || ch == '.' || ch == '_' || ch == '~'
 
-    isreserved(ch) = ch == ':' || ch == '/' || ch == '?' || ch == '#' || ch == '[' || 
+    isreserved(ch) = ch == ':' || ch == '/' || ch == '?' || ch == '#' || ch == '[' ||
     				 ch == ']' || ch == '@' || ch == '!' || ch == '$' || ch == '&' ||
     				 ch == '\''|| ch == '(' || ch == ')' || ch == '*' || ch == '+' ||
     				 ch == ',' || ch == ';' || ch == '='
@@ -21,7 +21,7 @@ module URITemplate
 
 	function pctencode(s::IO, c::Char, allowR = false)
 	    if c < 0x80
-	    	if isunreserved(c) 
+	    	if isunreserved(c)
 	    		write(s,c)
 	    	elseif allowR && isreserved(c)
 	    		write(s,c)
@@ -72,9 +72,9 @@ module URITemplate
 		out = IOBuffer()
 
 		# As a heuristic the result will probably be about as long as the template
-		# in either case it's probably not much shorter, so we can avoid spurious 
+		# in either case it's probably not much shorter, so we can avoid spurious
 		# allocation in the early phases, without too much overhead.
-		sizehint(out.data,sizeof(template)) 
+		sizehint(out.data,sizeof(template))
 
 		i = start(template)
 		while !done(template,i)
@@ -200,7 +200,7 @@ module URITemplate
 						error("Spurious characters past the end of expression.")
 					end
 					varname = ex[thisind(ex,j):varend]
-					if !haskey(variables,varname) 
+					if !haskey(variables,varname)
 						if done(ex,k)
 							break
 						end
@@ -214,15 +214,15 @@ module URITemplate
 					end
 					val = variables[varname]
 					if isa(val,String)
-						if named 
+						if named
 							write(out,varname)
 							if isempty(val)
 								write(out,ifemp)
-							else 
+							else
 								write(out,'=')
 							end
 						end
-						if limitlength 
+						if limitlength
 							l,m = 0,start(val)
 							while l < limit && !done(val,m)
 								(ch,m) = next(val,m)
@@ -233,17 +233,17 @@ module URITemplate
 							pctencode(out,val,allowR)
 						end
 					elseif !explode
-						if named 
+						if named
 							write(out,varname)
 							if isempty(val)
 								write(out,ifemp)
-							else 
+							else
 								write(out,'=')
 							end
 						end
 						f = true
 						if isa(val,Associative)
-							for (key,v) in val 
+							for (key,v) in val
 								if !f
 									print(out,',')
 								else
@@ -254,7 +254,7 @@ module URITemplate
 								pctencode(out,v,allowR)
 							end
 						else
-							for v in val 
+							for v in val
 								if !f
 									print(out,',')
 								else
@@ -281,7 +281,7 @@ module URITemplate
 										pctencode(out,v)
 									end
 								end
-							else 
+							else
 								for v in val
 									if !firstentry
 										write(out,sep)
@@ -299,7 +299,7 @@ module URITemplate
 							end
 						elseif isa(val,Associative)
 							f = true
-							for (key,v) in val 
+							for (key,v) in val
 								if !f
 									print(out,sep)
 								else
@@ -311,7 +311,7 @@ module URITemplate
 							end
 						else
 							f = true
-							for v in val 
+							for v in val
 								if !f
 									print(out,sep)
 								else
