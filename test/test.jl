@@ -42,43 +42,44 @@ merge!(l4,l2)
 @test expand("{var:30}",l4) == "value"
 @test expand("{list}",l4) == "red,green,blue"
 @test expand("{list*}",l4) == "red,green,blue"
-# Note this and other test rely on the order of iteration through a Dict (which may
-# unexpectadly change, but it seels like a good thing to have nontheless)
-@test expand("{keys}",l4) == "comma,%2c,semi,%3b,dot,."
-@test expand("{keys*}",l4) == "comma=%2c,semi=%3b,dot=."
+
+permcomma(a,c=',') = [join(x,c) for x in permutations(a)]
+
+@test sort(split(expand("{keys}",l4),',')) == sort(["comma","%2c","semi","%3b","dot","."])
+@test sort(split(expand("{keys*}",l4),',')) == sort(["comma=%2c","semi=%3b","dot=."])
 @test expand("{+path:6}/here",l4) == "/foo/b/here"
 @test expand("{+list}",l4) == "red,green,blue"
 @test expand("{+list*}",l4) == "red,green,blue"
-@test expand("{+keys}",l4) == "comma,,,semi,;,dot,."
-@test expand("{+keys*}",l4) == "comma=,,semi=;,dot=."
+@test expand("{+keys}",l4) in permcomma(["comma,,","semi,;","dot,."])
+@test expand("{+keys*}",l4) in permcomma(["comma=,","semi=;","dot=."])
 @test expand("{#path:6}/here",l4) == "#/foo/b/here"
 @test expand("{#list}",l4) == "#red,green,blue"
 @test expand("{#list*}",l4) == "#red,green,blue"
-@test expand("{#keys}",l4) == "#comma,,,semi,;,dot,."
-@test expand("{#keys*}",l4) == "#comma=,,semi=;,dot=."
+@test expand("{#keys}",l4) in [string("#",x) for x in permcomma(["comma,,","semi,;","dot,."])]
+@test expand("{#keys*}",l4) in [string("#",x) for x in permcomma(["comma=,","semi=;","dot=."])]
 @test expand("X{.var:3}",l4) == "X.val"
 @test expand("X{.list}",l4) == "X.red,green,blue"
 @test expand("X{.list*}",l4) == "X.red.green.blue"
-@test expand("X{.keys}",l4) == "X.comma,%2c,semi,%3b,dot,."
-@test expand("X{.keys*}",l4) == "X.comma=%2c.semi=%3b.dot=."
+@test expand("X{.keys}",l4) in [string("X.",x) for x in permcomma(["comma,%2c","semi,%3b","dot,."])]
+@test expand("X{.keys*}",l4) in [string("X.",x) for x in permcomma(["comma=%2c","semi=%3b","dot=."],'.')]
 @test expand("{/var:1,var}",l4) == "/v/value"
 @test expand("{/list}",l4) == "/red,green,blue"
 @test expand("{/list*}",l4) == "/red/green/blue"
 @test expand("{/list*,path:4}",l4) == "/red/green/blue/%2ffoo"
-@test expand("{/keys}",l4) == "/comma,%2c,semi,%3b,dot,."
-@test expand("{/keys*}",l4) == "/comma=%2c/semi=%3b/dot=."
+@test expand("{/keys}",l4) in [string("/",x) for x in permcomma(["comma,%2c","semi,%3b","dot,."])]
+@test expand("{/keys*}",l4) in [string("/",x) for x in permcomma(["comma=%2c","semi=%3b","dot=."],'/')]
 @test expand("{;hello:5}",l4) == ";hello=Hello"
 @test expand("{;list}",l4) == ";list=red,green,blue"
 @test expand("{;list*}",l4) == ";list=red;list=green;list=blue"
-@test expand("{;keys}",l4) == ";keys=comma,%2c,semi,%3b,dot,."
-@test expand("{;keys*}",l4) == ";comma=%2c;semi=%3b;dot=."
+@test expand("{;keys}",l4) in [string(";keys=",x) for x in permcomma(["comma,%2c","semi,%3b","dot,."])]
+@test expand("{;keys*}",l4) in [string(";",x) for x in permcomma(["comma=%2c","semi=%3b","dot=."],';')]
 @test expand("{?var:3}",l4) == "?var=val"
 @test expand("{?list}",l4) == "?list=red,green,blue"
 @test expand("{?list*}",l4) == "?list=red&list=green&list=blue"
-@test expand("{?keys}",l4) == "?keys=comma,%2c,semi,%3b,dot,."
-@test expand("{?keys*}",l4) == "?comma=%2c&semi=%3b&dot=."
+@test expand("{?keys}",l4) in [string("?keys=",x) for x in permcomma(["comma,%2c","semi,%3b","dot,."])]
+@test expand("{?keys*}",l4) in [string("?",x) for x in permcomma(["comma=%2c","semi=%3b","dot=."],'&')]
 @test expand("{&var:3}",l4) == "&var=val"
 @test expand("{&list}",l4) == "&list=red,green,blue"
 @test expand("{&list*}",l4) == "&list=red&list=green&list=blue"
-@test expand("{&keys}",l4) == "&keys=comma,%2c,semi,%3b,dot,."
-@test expand("{&keys*}",l4) == "&comma=%2c&semi=%3b&dot=."
+@test expand("{&keys}",l4) in [string("&keys=",x) for x in permcomma(["comma,%2c","semi,%3b","dot,."])]
+@test expand("{&keys*}",l4) in [string("&",x) for x in permcomma(["comma=%2c","semi=%3b","dot=."],'&')]

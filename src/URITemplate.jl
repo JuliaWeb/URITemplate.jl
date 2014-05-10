@@ -150,7 +150,7 @@ module URITemplate
 				sep = ","
 				op = :hash
 				allowR = true
-			elseif contains(ops,ch)
+			elseif ch in ops
 				error("Unimplemented template operator")
 			end
 			k = j
@@ -168,7 +168,11 @@ module URITemplate
 					explode = false
 					limitlength = false
 					limit = 0
-					varend = thisind(ex,k)#prevind(ex,k)
+					if k > sizeof(ex)
+						varend = sizeof(ex)
+					else
+						varend = prevind(ex,nextind(ex,k))
+					end
 					if ch == '*'
 						explode = true
 						if !done(ex,k)
@@ -192,14 +196,14 @@ module URITemplate
 						end
 						l == 0 && error("Zero-length : postfix not allowed")
 						if done(ex,k)
-							limit = parseint(ex[kl:thisind(ex,k)],10)
+							limit = parseint(ex[kl:sizeof(ex)],10)
 						else
 							limit = parseint(ex[kl:prevind(ex,prevind(ex,k))],10)
 						end
 					elseif !done(ex,k)
 						error("Spurious characters past the end of expression.")
 					end
-					varname = ex[thisind(ex,j):varend]
+					varname = ex[prevind(ex,nextind(ex,j)):varend]
 					if !haskey(variables,varname)
 						if done(ex,k)
 							break
