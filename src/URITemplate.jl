@@ -64,8 +64,23 @@ module URITemplate
 		return true
 	end
 
+	if VERSION < v"0.4.0-dev"
+		# eltype of Dict is now pair and not a Tuple
+		function keytype( dict )
+			return eltype(dict)[1]
+		end
+		# Size hint is replaced by sizehint!
+		sizehint! = sizehint
+	else
+		function keytype( dict )
+			return eltype( dict ).parameters[1]
+		end
+	end
+
+
+
 	function expand(template::String,variables)
-		if !(eltype(variables)[1] <: String)
+		if !( keytype( variables ) <: String)
 			variables = [string(k) => v for (k,v) in variables]
 		end
 
@@ -74,7 +89,7 @@ module URITemplate
 		# As a heuristic the result will probably be about as long as the template
 		# in either case it's probably not much shorter, so we can avoid spurious
 		# allocation in the early phases, without too much overhead.
-		sizehint(out.data,sizeof(template))
+		sizehint!(out.data,sizeof(template))
 
 		i = start(template)
 		while !done(template,i)
@@ -99,7 +114,7 @@ module URITemplate
 			end
 			done(template,prevind(template,i)) && error("Template ended while scanning expression")
 			#The expression excluding '{' and '}'
-			ex = SubString(template,j,prevind(template,prevind(template,i))) 
+			ex = SubString(template,j,prevind(template,prevind(template,i)))
 			isempty(ex) && error("Expression may not be empty!")
 			(ch,j) = next(ex,start(ex))
 			op = :NUL
