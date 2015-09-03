@@ -1,5 +1,7 @@
 # URITemplate.jl
 
+[![Build Status](https://travis-ci.org/JuliaWeb/URITemplate.jl.svg?branch=master)](https://travis-ci.org/JuliaWeb/URITemplate.jl)
+
 [![URITemplate](http://pkg.julialang.org/badges/URITemplate_0.3.svg)](http://pkg.julialang.org/?pkg=URITemplate&ver=0.3)
 [![URITemplate](http://pkg.julialang.org/badges/URITemplate_0.4.svg)](http://pkg.julialang.org/?pkg=URITemplate&ver=0.4)
 
