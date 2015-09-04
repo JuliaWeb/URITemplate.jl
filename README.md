@@ -5,7 +5,8 @@
 [![URITemplate](http://pkg.julialang.org/badges/URITemplate_0.3.svg)](http://pkg.julialang.org/?pkg=URITemplate&ver=0.3)
 [![URITemplate](http://pkg.julialang.org/badges/URITemplate_0.4.svg)](http://pkg.julialang.org/?pkg=URITemplate&ver=0.4)
 
-This package provides URI Template interpolation by implementing. (RFC 6570)[ttp://tools.ietf.org/html/rfc6570]. The only interface to this function is the expand method which may be invoked as
+This package provides URI Template interpolation by implementing [RFC 6570](ttp://tools.ietf.org/html/rfc6570).
+The only interface to this function is the expand method which may be invoked as
 
 ```julia
 URITemplate.expand(template,variables)
