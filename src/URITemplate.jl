@@ -17,7 +17,7 @@ module URITemplate
     				 ch == '\''|| ch == '(' || ch == ')' || ch == '*' || ch == '+' ||
     				 ch == ',' || ch == ';' || ch == '='
 
-	pctencode(s::IO,c::Uint8) = write(s,'%',base(16,c,2))
+	pctencode(s::IO,c::UInt8) = write(s,'%',base(16,c,2))
 
 	function pctencode(s::IO, c::Char, allowR = false)
 	    if c < 0x80
@@ -49,7 +49,7 @@ module URITemplate
 	    end
 	end
 
-	function pctencode(s::IO, string::String, allowR = false)
+	function pctencode(s::IO, string::AbstractString, allowR = false)
 		for c in string
 			pctencode(s,c,allowR)
 		end
@@ -64,7 +64,7 @@ module URITemplate
 		return true
 	end
 
-	function expand(template::String,variables)
+	function expand(template::AbstractString,variables)
 		if !(eltype(variables)[1] <: String)
 			variables = [string(k) => v for (k,v) in variables]
 		end
