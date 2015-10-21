@@ -64,20 +64,14 @@ module URITemplate
 		return true
 	end
 
-	if VERSION < v"0.4.0-dev"
+	if VERSION < v"0.4.0"
 		# eltype of Dict is now pair and not a Tuple
 		function keytype( dict )
 			return eltype(dict)[1]
 		end
 		# Size hint is replaced by sizehint!
 		sizehint! = sizehint
-	else
-		function keytype( dict )
-			return eltype( dict ).parameters[1]
-		end
 	end
-
-
 
 	function expand(template::AbstractString,variables)
 		if !( keytype( variables ) <: AbstractString)
