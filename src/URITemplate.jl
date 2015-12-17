@@ -17,7 +17,7 @@ module URITemplate
     				 ch == '\''|| ch == '(' || ch == ')' || ch == '*' || ch == '+' ||
     				 ch == ',' || ch == ';' || ch == '='
 
-	pctencode(s::IO,c::Uint8) = write(s,'%',base(16,c,2))
+	pctencode(s::IO,c::UInt8) = write(s,'%',base(16,c,2))
 
 	function pctencode(s::IO, c::Char, allowR = false)
 	    if c < 0x80
@@ -49,7 +49,7 @@ module URITemplate
 	    end
 	end
 
-	function pctencode(s::IO, string::String, allowR = false)
+	function pctencode(s::IO, string::AbstractString, allowR = false)
 		for c in string
 			pctencode(s,c,allowR)
 		end
@@ -64,8 +64,17 @@ module URITemplate
 		return true
 	end
 
-	function expand(template::String,variables)
-		if !(eltype(variables)[1] <: String)
+	if VERSION < v"0.4.0"
+		# eltype of Dict is now pair and not a Tuple
+		function keytype( dict )
+			return eltype(dict)[1]
+		end
+		# Size hint is replaced by sizehint!
+		sizehint! = sizehint
+	end
+
+	function expand(template::AbstractString,variables)
+		if !( keytype( variables ) <: AbstractString)
 			variables = [string(k) => v for (k,v) in variables]
 		end
 
@@ -74,7 +83,7 @@ module URITemplate
 		# As a heuristic the result will probably be about as long as the template
 		# in either case it's probably not much shorter, so we can avoid spurious
 		# allocation in the early phases, without too much overhead.
-		sizehint(out.data,sizeof(template))
+		sizehint!(out.data,sizeof(template))
 
 		i = start(template)
 		while !done(template,i)
@@ -99,7 +108,7 @@ module URITemplate
 			end
 			done(template,prevind(template,i)) && error("Template ended while scanning expression")
 			#The expression excluding '{' and '}'
-			ex = SubString(template,j,prevind(template,prevind(template,i))) 
+			ex = SubString(template,j,prevind(template,prevind(template,i)))
 			isempty(ex) && error("Expression may not be empty!")
 			(ch,j) = next(ex,start(ex))
 			op = :NUL
@@ -217,7 +226,7 @@ module URITemplate
 						write(out,sep)
 					end
 					val = variables[varname]
-					if isa(val,String)
+					if isa(val,AbstractString)
 						if named
 							write(out,varname)
 							if isempty(val)
